@@ -1,0 +1,108 @@
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe.config
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.pdb
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\bin\Debug\ExtendedString.dll
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\bin\Debug\ExtendedString.pdb
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\MainWindow.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\App.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.lref
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\App.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DeviceControlButtonCell.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DeviceControlDisplayCell.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DeviceControlItem.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\MainWindow.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\Theme\Generic.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.g.resources
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.Properties.Resources.resources
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.GenerateResource.Cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.CoreCompileInputs.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.exe
+C:\Users\williamxia\source\repos\DsiplayCellDemo\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.pdb
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe.config
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.pdb
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\MainWindow.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\App.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.lref
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\App.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DeviceControlButtonCell.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DeviceControlDisplayCell.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DeviceControlItem.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\MainWindow.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\Theme\Generic.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.g.resources
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.Properties.Resources.resources
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.GenerateResource.Cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.CoreCompileInputs.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.exe
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.pdb
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csprojResolveAssemblyReference.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\Themes\Generic.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source\DsiplayCellDemo\obj\Debug\DanteGridView.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe.config
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.pdb
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csprojResolveAssemblyReference.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\MainWindow.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\App.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.lref
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\App.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DeviceControlButtonCell.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DeviceControlDisplayCell.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DeviceControlItem.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DanteGridView.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\MainWindow.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\Themes\Generic.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\Theme\Generic.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.g.resources
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.Properties.Resources.resources
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.GenerateResource.Cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.CoreCompileInputs.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.exe
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.pdb
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe.config
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.pdb
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\MainWindow.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\App.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.lref
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\App.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DeviceControlButtonCell.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DeviceControlDisplayCell.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DeviceControlItem.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DanteGridView.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\MainWindow.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\Themes\Generic.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\Theme\Generic.baml
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.g.resources
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.Properties.Resources.resources
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.GenerateResource.Cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.CoreCompileInputs.cache
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.exe
+C:\Users\williamxia\source\repos\DsiplayCellDemo\source dante20180113\source Dante_CsharpArithmetic20180115\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.pdb
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe.config
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.exe
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\bin\Debug\DsiplayCellDemo.pdb
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\bin\Debug\DanteLib.dll
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\bin\Debug\DanteLib.pdb
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csprojResolveAssemblyReference.cache
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\MainWindow.g.cs
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\App.g.cs
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.cache
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo_MarkupCompile.lref
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\App.baml
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\MainWindow.baml
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.g.resources
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.Properties.Resources.resources
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.GenerateResource.Cache
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.csproj.CoreCompileInputs.cache
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.exe
+D:\JinHeng\William\work\VCsharp\work\DanteView\sourceDante\source\DsiplayCellDemo\obj\Debug\DsiplayCellDemo.pdb

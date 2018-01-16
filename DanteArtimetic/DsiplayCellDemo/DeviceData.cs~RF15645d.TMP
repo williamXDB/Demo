@@ -1,0 +1,212 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DsiplayCellDemo
+{
+    public class DeviceData
+    {
+
+        //表格的，行与列数
+        public int blockRowValues { get; set; }  //每一个数据块作为一个单位，行数
+        public int blockColumValues { get; set; } //每一个数据块作为一个单位，列数，注意不一定相等
+
+        //当前整个方块所在父表格的位置索引，分别对应行与列的起始索引数：
+        public int iRowindex { get; set; }
+        public int iColumindex { get; set; }
+
+        public int eRowindex { get { return blockRowValues + iRowindex; } }
+        public int eColumindex { get { return blockColumValues + iColumindex; } }
+
+        public int mainBlockRCNumber { get; set; }//主方块数据行或列数（是相等的）
+
+
+        #region devcice and ports record
+        public int deviceNumber { get; set; }//record all devices number
+        public List<int> m_DeviceAbout_MainPort_NumberList;//how many main ports number in every device for danty
+        #endregion
+
+        #region input/ouput port list define
+        public List<List<CellState>> m_InputPortList; //以设备为单位进行添加
+        public List<CellState> m_OutputPortList;
+        #endregion
+
+
+
+        public List<CellState> m_blockCellStateList { get; set; }
+
+        public List<CellState> m_LeftTop_StateList { get; set; }
+
+        public int iLeftTopIndex { get { return m_LeftTop_StateList.Count; } }
+        public DeviceInfo m_deviceInfo { get; set; }
+        //
+        public DeviceData()
+        {
+            m_DeviceAbout_MainPort_NumberList = new List<int>();
+            m_InputPortList = new List<List<CellState>>();
+            m_OutputPortList = new List<CellState>();
+
+            blockRowValues = 0;
+            blockColumValues = 0;
+            m_blockCellStateList = new List<CellState>();
+            m_LeftTop_StateList = new List<CellState>();
+
+        }
+
+
+        //main Row ||column numbers
+        public int getTotal_MainRC_CellNumbers()
+        {
+
+            int res = 0;
+            for (int i = 0; i < m_DeviceAbout_MainPort_NumberList.Count; i++)
+            {
+                res += m_DeviceAbout_MainPort_NumberList[i];
+            }
+            return res;
+        }
+        //每次的添加，都关系到一个主方块的添加，还有若干个次方块，主方块的数量，也即是device的实际个数,index的上一个为止的主方块数量
+        public int getTotal_LastMainRC_CellNumbers(int index)
+        {
+            int res = 0;
+            if (index == 0) return 0;
+            for (int i = 0; i < index; i++)
+            {
+                res += m_DeviceAbout_MainPort_NumberList[i];
+            }
+            return res;
+        }
+
+
+        public void resetAllData()
+        {
+            m_InputPortList.Clear();
+            m_OutputPortList.Clear();
+        }
+
+        public int TotalCellNumber   //number of row or column total 
+        {
+            get
+            {
+                return m_blockCellStateList.Count;
+            }
+        }
+
+        public void setCellSate_SingleBool(bool isRes)
+        {
+            for (int i = 1; i < m_blockCellStateList.Count; i++)
+            {
+                m_blockCellStateList[i].SingleBool = isRes;
+            }
+        }
+        /// <summary>
+        /// m_centerState 包括了左边和上面的边界顶点
+        /// </summary>
+        /// <param name="isRes"></param>
+
+        public void procesCellSingleBool_Left_OpeClospge(bool isOpen)
+        {
+            int nc = NRC;//contian foxed row and col
+            if (isTopClosed)
+            {
+                for (int i = 1; i < nc; i++)
+                {
+                    m_blockCellStateList[i].SingleBool = isOpen;
+                }
+            }
+            else
+            {
+                int tot = m_blockCellStateList.Count;
+                for (int i = 1; i < tot; i++)
+                {
+                    m_blockCellStateList[i].SingleBool = isOpen;
+                }
+                for (int i = 0; i < nc; i++)
+                {
+                    m_blockCellStateList[i * nc].SingleBool = true;
+                }
+
+            }
+            m_blockCellStateList[0].IsSelect = isOpen;
+
+        }
+
+
+        public void procesCellSingleBool_Top_OpeClospge(bool isOpen)
+        {
+            int nc = NRC;
+            if (isLeftClosed)
+            {
+                m_blockCellStateList[0].SingleBool = true;
+                for (int i = 1; i < nc; i++)
+                {
+                    m_blockCellStateList[i * nc].SingleBool = isOpen;
+                }
+            }
+            else
+            {
+                int tot = m_blockCellStateList.Count;
+                for (int i = nc; i < tot; i++)
+                {
+                    m_blockCellStateList[i].SingleBool = isOpen;
+                }
+                for (int i = 0; i < nc; i++)
+                {
+                    m_blockCellStateList[i].SingleBool = true;
+                }
+
+            }
+            m_blockCellStateList[0].IsSelect = isOpen;
+        }
+
+        public void procesCellSingleBool_Mid_OpeClospge(bool isOpen)
+        {
+            int nc = NRC;
+            int tot = m_blockCellStateList.Count;
+            for (int i = 1; i < tot; i++)
+            {
+                m_blockCellStateList[i].SingleBool = isOpen;
+            }
+            m_blockCellStateList[0].SingleBool = true;
+            m_blockCellStateList[0].IsSelect = isOpen;
+        }
+
+
+        public bool isTopClosed
+        {
+            get
+            {
+                return misTopClosed();
+            }
+        }
+
+        public int NRC    //Row or column number count
+        {
+            get { return (int)Math.Sqrt(m_blockCellStateList.Count); }
+        }
+        private bool misTopClosed()
+        {
+            int nc = NRC;
+            return (m_blockCellStateList[nc * (nc - 1)].SingleBool == false);
+        }
+
+        public bool isLeftClosed
+        {
+            get
+            {
+                return misLeftClosed();
+            }
+        }
+
+        private bool misLeftClosed()
+        {
+            int nc = NRC;
+            return (m_blockCellStateList[nc - 1].SingleBool == false);
+
+        }
+
+    }
+
+}

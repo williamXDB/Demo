@@ -1,0 +1,143 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace DsiplayCellDemo
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+
+
+            DeviceInfo minfo = new DeviceInfo("Hellog Gogole", 10);
+            _DeviceCollection.Add(minfo);
+
+        }
+
+        private List<DeviceData> m_DeviceDataList = new List<DeviceData>();
+
+
+        /// <summary>
+        /// grid is contained in scrollview 
+        /// </summary>
+        /// 
+
+        public int RowCellNumbers()
+        {
+            int res = 0;
+            for (int i = 0; i < m_DeviceDataList.Count; i++)
+            {
+                res += m_DeviceDataList[i].numberInterface;
+            }
+            return res;
+        }
+
+        public int Dcounter = 0; //添加的计时器
+        private ObservableCollection<DeviceInfo> _DeviceCollection = new ObservableCollection<DeviceInfo>();
+        public void addControll_toLeftScroll(DeviceInfo mDevinfo, List<DeviceData> mList, Grid mLeftgrid, Grid mTopgrid, Grid mCenterGrid)
+        {
+            // DeviceInfo devinfo = new DeviceInfo(devName, count);
+            DeviceData m_devData = new DeviceData();
+            m_devData.m_deviceInfo = mDevinfo;
+            int cindex = m_devData.fromindex = RowCellNumbers();
+
+            List<CellState> m_CellList = new List<CellState>();
+
+            int nc = mDevinfo.InterfaceCount + 1;
+
+            for (int i = 0; i < nc; i++)
+            {
+                mLeftgrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20, GridUnitType.Auto) });
+                mTopgrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(20, GridUnitType.Auto) });
+                for (int j = 0; j < nc; j++)
+                    m_CellList.Add(new CellState()); //add cellstate to lefth cell list
+
+            }
+            DeviceControlItem gdLeftItem = null;
+            DeviceControlItem gdTopItem = null;
+            for (int i = 0; i < nc; i++)
+            {
+
+                if (i == 0)
+                {
+                    gdLeftItem = new DeviceControlItem() { FirstLevel = false, HeaderName = mDevinfo.Name, Tag = mDevinfo, Direction = _Direction.Left };
+                    gdLeftItem.ExpandItems += MainWindow_ExpandItems;
+
+                    gdTopItem = new DeviceControlItem() { FirstLevel = false, HeaderName = mDevinfo.Name, Tag = mDevinfo, Direction = _Direction.Top };
+                    gdTopItem.ExpandItems += MainWindow_ExpandItems;
+                }
+                else //i>1
+                {
+                    gdLeftItem = new DeviceControlItem() { FirstLevel = true, HeaderName = mDevinfo.InputArray[i - 1].Name, Tag = mDevinfo, Direction = _Direction.Left };
+                    gdTopItem = new DeviceControlItem() { FirstLevel = true, HeaderName = mDevinfo.OutputArray[i - 1].Name, Tag = mDevinfo, Direction = _Direction.Top };
+                }
+
+                AddNewControlToGrid(gdLeftItem, i + cindex, 0, mLeftgrid);//add control to left grid
+                AddNewControlToGrid(gdLeftItem, 0, i + cindex, mTopgrid);//add control to left grid
+
+                gdLeftItem.SetBinding(DeviceControlItem.VisibilityProperty, new Binding("SingleBool")
+                {
+                    Source = m_CellList[i],
+                    Converter = Converter.CellVisibilityConverterForSingle
+                });
+                gdLeftItem.iTag = Dcounter;
+
+                gdTopItem.SetBinding(DeviceControlItem.VisibilityProperty, new Binding("SingleBool")
+                {
+                    Source = m_CellList[i * (nc+1)],
+                    Converter = Converter.CellVisibilityConverterForSingle
+                });
+                gdTopItem.iTag = Dcounter;
+
+            }
+            m_CellList[0].SingleBool = true;
+
+            m_devData.m_CenterCellStateList = m_CellList;
+
+            m_devData.dindex = Dcounter++;
+            mList.Add(m_devData);
+        }
+
+        private void AddNewControlToGrid(Control control, int row, int column, Grid grid)
+        {
+            grid.Children.Add(control);
+            Grid.SetRow(control, row); //将control设置在第几行，注意这里是静态方法
+            Grid.SetColumn(control, column);//将control设置在第几行，
+        }
+
+        private void MainWindow_ExpandItems(bool IsOpen, DeviceControlItem Source)
+        {
+            //  throw new NotImplementedException();
+            int index = Source.iTag;
+            Debug.WriteLine("you click the index is  {0}", index);
+            m_DeviceDataList[index].setCellSate_SingleBool(IsOpen);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            addControll_toLeftScroll(_DeviceCollection[0], m_DeviceDataList, leftGD, TopGD, CenterGD);
+            // Debug.WriteLine("m_cellState counst is {0}", m_cellState.Count);
+        }
+    }
+
+
+
+}

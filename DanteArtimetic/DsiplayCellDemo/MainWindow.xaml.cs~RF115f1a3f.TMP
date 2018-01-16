@@ -1,0 +1,114 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace DsiplayCellDemo
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+
+
+            DeviceInfo minfo = new DeviceInfo("Hellog Gogole", 10);
+            _DeviceCollection.Add(minfo);
+
+        }
+
+        private List<DeviceData> m_DeviceDataList = new List<DeviceData>();
+
+
+        /// <summary>
+        /// grid is contained in scrollview 
+        /// </summary>
+        /// 
+
+        public int RowCellNumbers()
+        {
+            int res = 0;
+            for (int i = 0; i < m_DeviceDataList.Count; i++)
+            {
+                res += m_DeviceDataList[i].numberInterface;
+            }
+            return res;
+        }
+
+        public int Dcounter = 0; //添加的计时器
+        private ObservableCollection<DeviceInfo> _DeviceCollection = new ObservableCollection<DeviceInfo>();
+        public void addControll_toLeftScroll(DeviceInfo mDevinfo, List<DeviceData> mList, Grid mgd)
+        {
+            // DeviceInfo devinfo = new DeviceInfo(devName, count);
+            DeviceData m_devData = new DeviceData();
+            m_devData.m_deviceInfo = mDevinfo;
+            int cindex = m_devData.fromindex = RowCellNumbers();
+
+            List<CellState> m_cellList = new List<CellState>();
+            for (int i = 0; i < mDevinfo.InterfaceCount + 1; i++)
+            {
+                mgd.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20, GridUnitType.Auto) });
+                m_cellList.Add(new CellState());
+            }
+            DeviceControlItem gdSmall = null;
+            for (int i = 0; i < mDevinfo.InterfaceCount + 1; i++)
+            {
+                mgd.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20, GridUnitType.Auto) });
+
+                if (i == 0)
+                {
+                    gdSmall = new DeviceControlItem() { FirstLevel = false, HeaderName = mDevinfo.Name, Tag = mDevinfo, Direction = _Direction.Left };
+                    gdSmall.ExpandItems += MainWindow_ExpandItems;
+                }
+                else //i>1
+                {
+                    gdSmall = new DeviceControlItem() { FirstLevel = true, HeaderName = mDevinfo.InputArray[i - 1].Name, Tag = mDevinfo, Direction = _Direction.Left };
+                }
+                mgd.Children.Add(gdSmall);
+                Grid.SetRow(gdSmall, i + cindex);
+                gdSmall.SetBinding(DeviceControlItem.VisibilityProperty, new Binding("SingleBool")
+                {
+                    Source = m_cellList[i],
+                    Converter = Converter.CellVisibilityConverterForSingle
+                });
+                gdSmall.iTag = Dcounter;
+            }
+            m_cellList[0].SingleBool = true;
+            m_devData.m_cellStateList = m_cellList;
+            m_devData.dindex = Dcounter++;
+            mList.Add(m_devData);
+        }
+
+        private void MainWindow_ExpandItems(bool IsOpen, DeviceControlItem Source)
+        {
+            //  throw new NotImplementedException();
+            int index = Source.iTag;
+            Debug.WriteLine("you click the index is  {0}", index);
+            m_DeviceDataList[index].setCellSate_SingleBool(IsOpen);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            addControll_toLeftScroll(_DeviceCollection[0], m_DeviceDataList, leftGD);
+            // Debug.WriteLine("m_cellState counst is {0}", m_cellState.Count);
+        }
+    }
+
+
+
+}

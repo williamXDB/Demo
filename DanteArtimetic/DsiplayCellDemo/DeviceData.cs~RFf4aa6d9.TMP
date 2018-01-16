@@ -1,0 +1,995 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
+
+namespace DsiplayCellDemo
+{
+    public class DeviceData
+    {
+
+        //表格的，行与列数
+        public int blockRowValues { get; set; }  //每一个数据块作为一个单位，行数
+        public int blockColumValues { get; set; } //每一个数据块作为一个单位，列数，注意不一定相等
+
+        //当前整个方块所在父表格的位置索引，分别对应行与列的起始索引数：
+        public int iRowindex { get; set; }
+        public int iColumindex { get; set; }
+
+        public int eRowindex { get { return blockRowValues + iRowindex; } }
+        public int eColumindex { get { return blockColumValues + iColumindex; } }
+
+        public int mainBlockRCNumber { get; set; }//主方块数据行或列数（是相等的）
+
+
+        #region devcice and ports record
+        public int deviceNumber { get; set; }//record all devices number  ,note is not base 0,but counter base 1 from
+        public List<int> m_DeviceAbout_MainPort_NumberList;//how many main ports number in every device for danty
+        #endregion
+
+        #region input/ouput port list define
+        public List<List<CellState>> m_LeftPortList; //以设备为单位进行添加
+        public List<List<CellState>> m_TopPortList;//以设备为单位进行添加
+        public List<List<CellState>> m_CenterPortList;
+        #endregion
+
+        #region as temp use only
+        public int leftTopDevNumber;
+        public int getLeft_TreeDevicePorts()
+        {
+            int resmax = 0;
+            for (int i = 0; i < m_LeftPortList.Count; i++)
+            {
+                resmax += m_LeftPortList[i].Count;
+            }
+            return resmax;
+        }
+        public int getTop_TreeDevicePorts()
+        {
+            int resmax = 0;
+            for (int i = 0; i < m_TopPortList.Count; i++)
+            {
+                resmax += m_TopPortList[i].Count;
+            }
+            return resmax;
+        }
+        #endregion
+
+        public DeviceInfo m_deviceInfo { get; set; }
+        //
+        public DeviceData()
+        {
+            deviceNumber = 0;
+            m_DeviceAbout_MainPort_NumberList = new List<int>();
+            m_LeftPortList = new List<List<CellState>>();
+            m_TopPortList = new List<List<CellState>>();
+            m_CenterPortList = new List<List<CellState>>();
+
+            blockRowValues = 0;
+            blockColumValues = 0;
+            seekXPos = new XPos();
+            oldXPos = new XPos();
+        }
+
+        #region expand and cosllap below
+
+        public void expanderFully(int index, bool isExpan)
+        {
+            if (index >= 0 && index < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[index];
+                foreach (CellState mstate in tmpList)
+                {
+                    mstate.SingleBool = isExpan;
+                }
+
+            }
+
+
+        }
+
+
+        public void clollapsExpandTop(int index)
+        {
+            if (index >= 0 && index < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[index];
+                if (tmpList.Count < 1) return;
+                int cols = tmpList[0].NCols;
+                int rows = tmpList[0].NRows;
+
+                if (isFull_allSideExpaned(tmpList))
+                {
+                    foreach (CellState mstate in tmpList)
+                    {
+                        mstate.SingleBool = false;
+                    }
+                    for (int i = 1; i < rows; i++)
+                    {
+                        tmpList[i * cols].SingleBool = true;
+                    }
+
+
+                }
+                else if (isOnly_TopSideExpanded(tmpList))
+                {
+                    for (int i = 1; i < cols; i++)
+                    {
+                        tmpList[i].SingleBool = false;
+                    }
+
+                }
+
+            }
+
+        }
+        public void clollapsExpandLeft(int index)
+        {
+            if (index >= 0 && index < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[index];
+                if (tmpList.Count < 1) return;
+                int cols = tmpList[0].NCols;
+                int rows = tmpList[0].NRows;
+
+                if (isFull_allSideExpaned(tmpList))
+                {
+                    foreach (CellState mstate in tmpList)
+                    {
+                        mstate.SingleBool = false;
+                    }
+                    for (int i = 1; i < cols; i++)
+                    {
+                        tmpList[i].SingleBool = true;
+                    }
+
+                }
+                else if (isOnly_LeftSideExpanded(tmpList))
+                {
+                    for (int i = 1; i < rows; i++)
+                    {
+                        tmpList[i * cols].SingleBool = false;
+                    }
+
+                }
+
+            }
+
+        }
+
+        public void expanderLeftSideOnly(int index)
+        {
+
+            if (index >= 0 && index < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[index];
+                if (tmpList.Count < 1) return;
+
+                foreach (CellState mstate in tmpList)
+                {
+                    mstate.SingleBool = false;
+                }
+
+                int cols = tmpList[0].NCols;
+                int rows = tmpList[0].NRows;
+                for (int i = 1; i < rows; i++)
+                {
+                    tmpList[i * cols].SingleBool = true;
+                }
+            }
+
+
+        }
+        public bool isOnly_TopSideExpanded(List<CellState> mList)
+        {
+            bool isExpaned = false;
+            int length = mList.Count;
+            int rows = mList[0].NRows;
+            int cols = mList[0].NCols;
+            isExpaned = (mList[length - 1].SingleBool == false && mList[cols - 1].SingleBool == true && mList[cols * (rows - 1)].SingleBool == false);
+            return isExpaned;
+        }
+
+        public bool isOnly_LeftSideExpanded(List<CellState> mList)
+        {
+            bool isExpaned = false;
+            int length = mList.Count;
+            int rows = mList[0].NRows;
+            int cols = mList[0].NCols;
+            isExpaned = (mList[length - 1].SingleBool == false && mList[cols - 1].SingleBool == false && mList[cols * (rows - 1)].SingleBool);
+            return isExpaned;
+        }
+
+
+        public bool isFull_allSideExpaned(List<CellState> mList)
+        {
+            int length = mList.Count;
+            int rows = mList[0].NRows;
+            int cols = mList[0].NCols;
+            return (mList[length - 1].SingleBool && mList[cols - 1].SingleBool && mList[cols * (rows - 1)].SingleBool);
+        }
+
+        public bool isFull_allSideNoneExpaned(List<CellState> mList)
+        {
+            int length = mList.Count;
+            int rows = mList[0].NRows;
+            int cols = mList[0].NCols;
+            return (mList[length - 1].SingleBool == false && mList[cols - 1].SingleBool == false && mList[cols * (rows - 1)].SingleBool == false);
+        }
+
+
+
+        /// <summary>
+        /// follow up to add it to list
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="isExpan"></param>
+        public void expanderTopOnly(int index)
+        {
+
+            if (index >= 0 && index < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[index];
+                if (tmpList.Count < 1) return;
+
+                foreach (CellState mstate in tmpList)
+                {
+                    mstate.SingleBool = false;
+                }
+
+                int cols = tmpList[0].NCols;
+                int rows = tmpList[0].NRows;
+                for (int i = 1; i < cols; i++)
+                {
+                    tmpList[i].SingleBool = true;
+                }
+            }
+
+
+        }
+        public void expander_cosllapProcess(int index, bool isExpander)
+        {
+
+            if (index >= 0 && index < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[index];
+                if (tmpList.Count < 1) return;
+                int rowx = tmpList[0].FRow;//begin compare from
+                int colx = tmpList[0].FCol; //begin compare from
+                for (int i = 0; i < m_CenterPortList.Count; i++)
+                {
+                    if (index != i) //not the same 
+                    {
+                        Block_StatusRelease brelease = gTwoBlockRelease(tmpList[0], m_CenterPortList[i]);
+
+                        switch (brelease)
+                        {
+                            //-------------------------------------------left and right-----------------
+                            case Block_StatusRelease.SameRow_JustRight:
+                            case Block_StatusRelease.SameRow_JustLeft:
+                            case Block_StatusRelease.SameRow_Left:
+                            case Block_StatusRelease.SameRow_Right:
+                                {
+                                    expander_collsap_centerList_via_itemindex_left(i, isExpander);
+
+                                }
+                                break;
+                            //--------------------------------------------top and bottom------------------
+                            case Block_StatusRelease.SameColumn_JustTop:
+                            case Block_StatusRelease.SameColumn_JustBottom:
+                            case Block_StatusRelease.SameColumn_Top:
+                            case Block_StatusRelease.SameColumn_Bottom:
+                                {
+                                    expander_collsap_centerList_via_itemindex_Top(i, isExpander);
+                                }
+                                break;
+
+
+                        }
+
+                    }
+                }
+                expanderFully(index, isExpander);
+                expand_leftTreeDevice_viaRow(rowx, isExpander);
+                expand_TopTreeDevice_viaColumn(colx, isExpander);
+
+            }
+
+        }
+        //to main block status Release
+        public enum Block_StatusRelease
+        {
+            Block_NonePos, SameRow_Left, SameRow_JustLeft, SameRow_JustRight, SameRow_Right, SameColumn_JustTop, SameColumn_Top, SameColumn_JustBottom, SameColumn_Bottom
+        }
+
+
+        /// <summary>
+        /// the col and row cannot be the same block compare to cellstate list
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <param name="mlist"></param>
+        /// <returns></returns>
+        public Block_StatusRelease gTwoBlockRelease(CellState state, List<CellState> mlist)
+        {
+            Block_StatusRelease bRelease = Block_StatusRelease.Block_NonePos;
+            int row = state.FRow;
+            int col = state.FCol;
+
+            foreach (CellState mstate in mlist)
+            {
+                if (mstate.FRow == row && mstate.FCol != col)
+                {
+
+                    if (mstate.FCol < col)
+                    {
+                        bRelease = Block_StatusRelease.SameRow_Left;
+                        if (Math.Abs(mstate.FCol - col) == mstate.NCols)
+                        {
+                            bRelease = Block_StatusRelease.SameRow_JustLeft;  //the main block is just left the row,col left 
+                        }
+                    }
+                    else if (mstate.FCol > col)
+                    {
+                        bRelease = Block_StatusRelease.SameRow_Right;
+                        if (Math.Abs(mstate.FCol - col) == state.NCols)
+                        {
+                            bRelease = Block_StatusRelease.SameRow_JustRight;  //the main block is just right the row,col 
+                        }
+
+                    }
+                    break;
+                }
+                else if (mstate.FCol == col && mstate.FRow != row)
+                {
+
+                    if (mstate.FRow < row)
+                    {
+                        bRelease = Block_StatusRelease.SameColumn_Top;
+                        if (Math.Abs(mstate.FRow - row) == mstate.NRows)
+                        {
+                            bRelease = Block_StatusRelease.SameColumn_JustTop;  //the main block is just left the row,col left 
+                        }
+                    }
+                    else if (mstate.FRow > row)
+                    {
+                        bRelease = Block_StatusRelease.SameColumn_Bottom;
+                        if (Math.Abs(mstate.FRow - row) == state.NRows)
+                        {
+                            bRelease = Block_StatusRelease.SameColumn_JustBottom;  //the main block is just right the row,col 
+                        }
+
+                    }
+                    break;
+                }
+
+
+            }
+            return bRelease;
+        }
+        #endregion
+
+
+        #region for click from left treeview
+        public void cosllape_Expander_viaRow_forCenterList(int rowindex, bool isPander)
+        {
+            for (int i = 0; i < m_CenterPortList.Count; i++)
+            {
+                cosllape_Expander_viaRow_aboutCenterList(rowindex, i, isPander);
+            }
+
+        }
+
+        private void cosllape_Expander_viaRow_aboutCenterList(int rowindex, int index, bool isPander)
+        {
+            foreach (CellState mstate in m_CenterPortList[index])
+            {
+                if (rowindex == mstate.FRow)
+                {
+                    expander_collsap_centerList_via_itemindex_left(index, isPander);
+                }
+            }
+        }
+
+        public void cosllape_Expander_viaCol_forCenterList(int colindex, bool isPander)
+        {
+            for (int i = 0; i < m_CenterPortList.Count; i++)
+            {
+                cosllape_Expander_viaColumn_aboutCenterList(colindex, i, isPander);
+            }
+
+        }
+        private void cosllape_Expander_viaColumn_aboutCenterList(int colmn, int index, bool isPander)
+        {
+            foreach (CellState mstate in m_CenterPortList[index])
+            {
+                if (colmn == mstate.FCol)
+                {
+                    expander_collsap_centerList_via_itemindex_Top(index, isPander);
+                }
+            }
+        }
+
+        public void expander_collsap_centerList_via_itemindex_left(int i, bool isExpander)
+        {
+
+            if (isExpander)
+            {
+                if (isFull_allSideNoneExpaned(m_CenterPortList[i])) //=完全没有展开过的的
+                    expanderLeftSideOnly(i);//仅展开左侧
+                else if (isOnly_TopSideExpanded(m_CenterPortList[i]))
+                {
+                    expanderFully(i, isExpander);
+                }
+            }
+            else
+            {
+                clollapsExpandLeft(i);
+            }
+
+        }
+
+        public void expander_collsap_centerList_via_itemindex_Top(int i, bool isExpander)
+        {
+            if (isExpander)
+            {
+                if (isFull_allSideNoneExpaned(m_CenterPortList[i])) //=完全没有展开过的的
+                    expanderTopOnly(i);//仅展开顶层
+                else if (isOnly_LeftSideExpanded(m_CenterPortList[i]))
+                {
+                    expanderFully(i, isExpander);
+                }
+                // Debug.WriteLine("will  process just same column block row:{0} col:{1} its devindex {2}   target devindex {3}  posRelease :{4}", rowx, colx, index, i, brelease);
+            }
+            else
+            {
+                clollapsExpandTop(i);
+            }
+        }
+
+
+
+        #endregion
+        /*
+         同行的展开左侧
+         同列的展开顶端
+             */
+
+        //main Row ||column numbers
+        public int getTotal_MainRC_CellNumbers()
+        {
+
+            int res = 0;
+            for (int i = 0; i < m_DeviceAbout_MainPort_NumberList.Count; i++)
+            {
+                res += m_DeviceAbout_MainPort_NumberList[i];
+            }
+            return res;
+        }
+        //每次的添加，都关系到一个主方块的添加，还有若干个次方块，主方块的数量，也即是device的实际个数,index的上一个为止的主方块数量
+        public int getTotal_LastMainRC_CellNumbers(int index)
+        {
+            int res = 0;
+            if (index == 0) return 0;
+            for (int i = 0; i < index; i++)
+            {
+                res += m_DeviceAbout_MainPort_NumberList[i];
+            }
+            return res;
+        }
+
+
+        public void resetAllData()
+        {
+            m_LeftPortList.Clear();
+            m_CenterPortList.Clear();
+            m_TopPortList.Clear();
+        }
+
+        public void expand_TopTreeDevice(int index, bool isPander)
+        {
+            //true:expand,false:cosllape
+            for (int i = 1; i < m_TopPortList[index].Count; i++)
+            {
+                m_TopPortList[index][i].SingleBool = isPander;
+            }
+            click_TopTreeView_case_getCenterCol_TopTrew(index, isPander);
+        }
+        public void click_TopTreeView_case_getCenterCol_TopTrew(int index, bool isPander)
+        {
+            int colindex = m_TopPortList[index][0].FCol;
+            cosllape_Expander_viaCol_forCenterList(colindex, isPander);
+        }
+
+        public void expand_leftTreeDevice(int index, bool isPander)
+        {
+            //true:expand,false:cosllape
+            for (int i = 1; i < m_LeftPortList[index].Count; i++)
+            {
+                m_LeftPortList[index][i].SingleBool = isPander;
+
+            }
+            click_leftTreeView_case_getCenterRow_LeftTrew(index, isPander);//index is left devindex
+
+        }
+
+        public void click_leftTreeView_case_getCenterRow_LeftTrew(int index, bool isPander)
+        {
+            int rowindex = m_LeftPortList[index][0].FRow;
+            //---------------------
+            cosllape_Expander_viaRow_forCenterList(rowindex, isPander);
+        }
+
+
+        public void expand_leftTreeDevice_viaRow(int row, bool isPander)
+        {
+            int devindex = -1;
+            for (int r = 0; r < m_LeftPortList.Count; r++)
+            {
+                for (int i = 0; i < m_LeftPortList[r].Count; i++)
+                {
+                    if (m_LeftPortList[r][i].FRow == row)
+                    {
+                        devindex = r;
+                        break;
+                    }
+
+                }
+
+            }
+            if (devindex >= 0)
+            {
+                expand_leftTreeDevice(devindex, isPander);
+            }
+        }
+        public void expand_TopTreeDevice_viaColumn(int col, bool isPander)
+        {
+            int devindex = -1;
+            for (int c = 0; c < m_TopPortList.Count; c++)
+            {
+                for (int i = 0; i < m_TopPortList[c].Count; i++)
+                {
+                    if (m_TopPortList[c][i].FCol == col)
+                    {
+                        devindex = c;
+                        break;
+                    }
+
+                }
+
+            }
+            if (devindex >= 0)
+            {
+                expand_TopTreeDevice(devindex, isPander);
+            }
+        }
+
+        private bool isTopPanderCollapse(int index)
+        {
+            int length = m_TopPortList[index].Count;
+            return (m_TopPortList[index][length - 1].SingleBool == false);
+
+        }
+
+        private bool isLeftPanderCollapse(int index)
+        {
+            int length = m_LeftPortList[index].Count;
+            return (m_LeftPortList[index][length - 1].SingleBool == false);
+
+        }
+        #region begin process---connect
+
+
+        public void cellRowColumnClick_Connected(int rowindex, int colindex)
+        {
+            for (int dev = 0; dev < m_CenterPortList.Count; dev++)
+            {
+                cellRowColumnClick_Connected(rowindex, colindex, dev);
+            }         
+        }
+
+        public void click_TopTreeDevice_viaColumn_connect(int col, bool status)
+        {
+
+            for (int c = 0; c < m_TopPortList.Count; c++)
+            {
+                for (int i = 0; i < m_TopPortList[c].Count; i++)
+                {
+                    if (m_TopPortList[c][i].FCol == col)
+                    {
+                        m_TopPortList[c][i].IsConnected = status;
+                        Debug.WriteLine("m toppotlist click  col is   {0} status is  {1}", col, status);
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        public void click_LeftTreeDevice_viaRow_connect(int row, bool status)
+        {
+            
+            for (int c = 0; c < m_LeftPortList.Count; c++)
+            {
+                for (int i = 0; i < m_LeftPortList[c].Count; i++)
+                {
+                    if (m_LeftPortList[c][i].FRow == row)
+                    {
+                        m_LeftPortList[c][i].IsConnected = status;
+                        Debug.WriteLine("m toppotlist click  col is   {0} status is  {1}", row, status);
+                        break;
+                    }
+                }
+
+            }
+        }
+
+
+        public XPos seekXPos;
+        public XPos oldXPos;
+
+        private void setNewXpos(int row, int col)
+        {
+            oldXPos.xposCopyFrom(seekXPos);
+            seekXPos.FRow = row;
+            seekXPos.FCol = col;
+
+        }
+
+
+        public void cellRowColumnClick_Connected(int rowindex, int colindex, int devx)
+        {
+            if (devx >= 0 && devx < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[devx];
+
+                foreach (CellState mstate in tmpList)
+                {
+                    if (mstate.FRow == rowindex && mstate.FCol != colindex)
+                    {
+                        mstate.IsConnected = false;
+                        //click_TopTreeDevice_viaColumn_connect(mstate.FCol, false);
+                    }
+                    else if (mstate.FRow == rowindex && mstate.FCol == colindex)
+                    {
+                        mstate.IsConnected = !mstate.IsConnected;
+                        setNewXpos(rowindex, colindex);
+                        click_TopTreeDevice_viaColumn_connect(colindex, mstate.IsConnected);
+                        click_LeftTreeDevice_viaRow_connect(rowindex, mstate.IsConnected);
+                        if (mstate.IsConnected == true && seekXPos.isDiff_Col_sameRow_thePos(oldXPos))
+                        {
+                            click_TopTreeDevice_viaColumn_connect(oldXPos.FCol, false);
+                        }
+
+                    }
+
+                }
+                
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public bool isThisRowConnected_viaRow(int rowindex, int devx)
+        {
+            bool res = false;
+            if (devx >= 0 && devx < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[devx];
+
+                foreach (CellState mstate in tmpList)
+                {
+                    if (mstate.FRow == rowindex)
+                    {
+                        if (mstate.IsConnected)
+                        {
+                            res = true;
+                            break;
+                        }
+                    }
+                }
+
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// for cell center click 
+        /// </summary>
+        /// <param name="rowindex"></param>
+        /// <param name="colindex"></param>
+        /// <returns></returns>
+        public bool isThisRowConnected(int rowindex)
+        {
+            bool res = false;
+            for (int dev = 0; dev < m_CenterPortList.Count; dev++)
+            {
+                if (isThisRowConnected_viaRow(rowindex, dev))
+                {
+                    res = true;
+                    break;
+                }
+            }
+            return res;
+        }
+
+
+        public bool isThisColumnConnected(int colindex)
+        {
+            bool res = false;
+            for (int dev = 0; dev < m_CenterPortList.Count; dev++)
+            {
+                if (isThisColumnConnected_viaCol(colindex, dev))
+                {
+                    res = true;
+                    break;
+                }
+            }
+            return res;
+        }
+        public bool isThisColumnConnected_viaCol(int colindex, int devx)
+        {
+            bool res = false;
+            if (devx >= 0 && devx < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[devx];
+
+                foreach (CellState mstate in tmpList)
+                {
+                    if (mstate.FCol == colindex)
+                    {
+                        if (mstate.IsConnected)
+                        {
+                            res = true;
+                            break;
+                        }
+                    }
+
+                }
+
+            }
+            return res;
+        }
+
+        #endregion
+
+        //-------------------------------------------------------
+        #region  light row or column
+        public void lightOnRowCol(int rowindex, int colindex, int devx)
+        {
+            if (devx >= 0 && devx < m_CenterPortList.Count)
+            {
+                List<CellState> tmpList = m_CenterPortList[devx];
+                foreach (CellState mstate in tmpList)
+                {
+                    if (mstate.FRow == rowindex || mstate.FCol == colindex)
+                    {
+                        mstate.IsSelect = true;
+                    }
+                    else
+                    {
+                        mstate.IsSelect = false;
+                    }
+                }
+            }
+
+        }
+
+        public void lightOn_allCenterList_via_row_col(int rowindex, int colindex)
+        {
+            for (int i = 0; i < m_CenterPortList.Count; i++)
+            {
+                lightOnRowCol(rowindex, colindex, i);
+            }
+
+        }
+        #endregion
+        #region light on Column
+        #endregion
+        /*
+         多个属性可以绑定到同一个数据源中，其中一个数据发生改变，可以同时引起多个属性的同时改变
+             */
+
+        public void setMutiBinding_forTopTree(DeviceControlItem itemTop)
+        {
+            MultiBinding mBindingConnectProperty = new MultiBinding() { Mode = BindingMode.OneWay };
+            MultiBinding mBindingMouseHover = new MultiBinding() { Mode = BindingMode.OneWay };
+
+            // MultiBinding MBinding = new MultiBinding() { Mode = BindingMode.OneWay };
+
+
+            int colindex = itemTop.FCol;
+            int centerNumber = m_CenterPortList.Count;
+            //  if(colindex==1) 
+            //  Debug.WriteLine("set binding col index is  {0}", colindex);
+
+            for (int i = 0; i < m_CenterPortList.Count; i++)
+            {
+                foreach (CellState msate in m_CenterPortList[i])
+                {
+                    if (msate.FCol == colindex)
+                    {
+                        Binding bindingCon = new Binding("IsConnected") { Source = msate };
+                        Binding bindingMouseHover = new Binding("IsSelect") { Source = msate };
+                        mBindingConnectProperty.Bindings.Add(bindingCon);
+                        mBindingMouseHover.Bindings.Add(bindingMouseHover);
+                        //  if (colindex == 0)
+                        //   Debug.WriteLine("set mutibindg vitical colindex is {0} :  devindex {1}  devnumber is :{2} ", colindex, i, centerNumber);
+                    }
+                }
+
+            }
+            mBindingConnectProperty.Converter = Converter.BooleanOrConverter;
+            mBindingMouseHover.Converter= Converter.BooleanOrConverter;
+            itemTop.SetBinding(DeviceControlItem.IsConnectedProperty, mBindingConnectProperty);
+            itemTop.SetBinding(itemTop.IsMouseOver, mBindingMouseHover);
+
+        }
+
+        public void setMutiBinding_forLeftTree(DeviceControlItem itemrow)
+        {
+            MultiBinding MBinding = new MultiBinding() { Mode = BindingMode.OneWay };
+            int rowindex = itemrow.FRow;
+            int centerNumber = m_CenterPortList.Count;
+            //  if(colindex==1) 
+            //  Debug.WriteLine("set binding col index is  {0}", colindex);
+            for (int i = 0; i < m_CenterPortList.Count; i++)
+            {
+                foreach (CellState msate in m_CenterPortList[i])
+                {
+                    if (msate.FRow == rowindex)
+                    {
+                        Binding binding = new Binding("IsConnected") { Source = msate };
+                        MBinding.Bindings.Add(binding);
+                        //  if (colindex == 0)
+                        //   Debug.WriteLine("set mutibindg vitical colindex is {0} :  devindex {1}  devnumber is :{2} ", colindex, i, centerNumber);
+                    }
+
+                }
+
+            }
+            MBinding.Converter = Converter.BooleanOrConverter;
+            itemrow.SetBinding(DeviceControlItem.IsConnectedProperty, MBinding);
+        }
+
+        public void lighton_left_top_center_cell_via_row_col(int rowindex, int colindex)
+        {
+            //lightOnLeft_Treeview_via_row(rowindex);
+            //lightOn_allCenterList_via_row_col(rowindex, colindex);
+            lightOnTop_Treeview_via_col(colindex);
+
+
+        }
+
+        public void lightOnLeft_Treeview_via_row(int rowindex)
+        {
+            for (int i = 0; i < m_LeftPortList.Count; i++)
+            {
+                lightOnLeft_Treeview_via_row_devindex(rowindex, i);
+            }
+
+        }
+
+        public void lightOnLeft_Treeview_via_row_devindex(int rowindex, int devx)
+        {
+            if (devx >= 0 && devx < m_LeftPortList.Count)
+            {
+                List<CellState> tmpList = m_LeftPortList[devx];
+                foreach (CellState mstate in tmpList)
+                {
+                    if (mstate.FRow == rowindex)
+                    {
+                        mstate.IsSelect = true;
+                    }
+                    else
+                    {
+                        mstate.IsSelect = false;
+                    }
+                }
+            }
+
+        }
+
+        #region for click isconnect event define
+
+        public void clickConnectTop_Treeview_via_column(int colindex, bool sts)
+        {
+            for (int i = 0; i < m_LeftPortList.Count; i++)
+            {
+                clickConnectTop_Treeview_via_column_devindex(colindex, i, sts);
+            }
+
+        }
+
+        public void clickConnectTop_Treeview_via_column_devindex(int colindex, int devx, bool isConect)
+        {
+            if (devx >= 0 && devx < m_TopPortList.Count)
+            {
+                List<CellState> tmpList = m_TopPortList[devx];
+                foreach (CellState mstate in tmpList)
+                {
+                    if (mstate.FCol == colindex)
+                    {
+                        mstate.IsConnected = isConect;
+                        break;
+                    }
+
+                }
+            }
+
+        }
+        public void clickConnectLeft_Treeview_via_row(int rowindex, bool sts)
+        {
+            for (int i = 0; i < m_LeftPortList.Count; i++)
+            {
+                clickConnectLeft_Treeview_via_row_devindex(rowindex, i, sts);
+            }
+
+        }
+
+        public void clickConnectLeft_Treeview_via_row_devindex(int rowindex, int devx, bool isConect)
+        {
+            if (devx >= 0 && devx < m_LeftPortList.Count)
+            {
+                List<CellState> tmpList = m_LeftPortList[devx];
+                foreach (CellState mstate in tmpList)
+                {
+                    if (mstate.FRow == rowindex)
+                    {
+                        mstate.IsConnected = isConect;
+                        break;
+                    }
+
+                }
+            }
+
+        }
+        #endregion
+        //---
+        public void lightOnTop_Treeview_via_col(int colindex)
+        {
+            
+
+        }
+
+        public void lightOnTop_Treeview_via_col_devindex(int colindex, int devx)
+        {
+            if (devx >= 0 && devx < m_LeftPortList.Count)
+            {
+                List<CellState> tmpList = m_TopPortList[devx];
+                foreach (CellState mstate in tmpList)
+                {
+                    if (mstate.FCol == colindex)
+                    {
+                        mstate.IsSelect = true;
+                    }
+                    else
+                    {
+                        mstate.IsSelect = false;
+                    }
+                }
+            }
+
+        }
+
+
+    }
+}

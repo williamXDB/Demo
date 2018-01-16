@@ -1,0 +1,386 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace DsiplayCellDemo
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            DeviceInfo minfo = new DeviceInfo("Hellog Gogole", 10);
+            _DeviceCollection.Add(minfo);
+
+        }
+
+        private List<DeviceData> m_gDeviceDataList = new List<DeviceData>();
+
+
+        /// <summary>
+        /// grid is contained in scrollview 
+        /// </summary>
+        /// 
+
+
+
+        public int leftTreeRowindex()
+        {
+            int res = 0;
+            for (int i = 0; i < m_gDeviceDataList.Count; i++)
+            {
+                res += m_gDeviceDataList[i].iLeftTopIndex;
+            }
+            return res;
+
+        }
+
+
+        public int Dcounter = 0; //添加的计时器
+        private ObservableCollection<DeviceInfo> _DeviceCollection = new ObservableCollection<DeviceInfo>();
+
+
+        public void addControll_toLeftScroll(DeviceInfo mDevinfo, List<DeviceData> mList, Grid mLeftgrid, Grid mTopgrid, Grid mCenterGrid)
+        {
+            // DeviceInfo devinfo = new DeviceInfo(devName, count);
+            DeviceData m_devData = new DeviceData();
+            m_devData.m_deviceInfo = mDevinfo;
+            int rindex = leftTreeRowindex();
+
+            List<CellState> m_CellList = new List<CellState>();
+
+            int nc = mDevinfo.InterfaceCount + 1;
+
+            for (int i = 0; i < nc; i++) //column
+            {
+                mLeftgrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20, GridUnitType.Auto) });
+                mTopgrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(20, GridUnitType.Auto) });
+                CellState state = new CellState();
+                m_CellList.Add(state);//only for left/top cellstate                   
+                //center grid begin add     
+
+            }
+            //  Debug.WriteLine("cellstate count is {0}", m_CellList.Count);
+            DeviceControlItem gdLeftItem = null;
+            DeviceControlItem gdTopItem = null;
+            for (int i = 0; i < nc; i++)
+            {
+
+                if (i == 0)
+                {
+                    gdLeftItem = new DeviceControlItem() { FirstLevel = false, HeaderName = mDevinfo.Name, Tag = mDevinfo, Direction = _Direction.Left };
+                    gdLeftItem.ExpandItems += MainWindow_Left_ExpandItems;
+
+                    gdTopItem = new DeviceControlItem() { FirstLevel = false, HeaderName = mDevinfo.Name, Tag = mDevinfo, Direction = _Direction.Top };
+                    gdTopItem.ExpandItems += MainWindow_Top_ExpandItems;
+                }
+                else //i>1
+                {
+                    gdLeftItem = new DeviceControlItem() { FirstLevel = true, HeaderName = mDevinfo.InputArray[i - 1].Name, Tag = mDevinfo, Direction = _Direction.Left };
+                    gdTopItem = new DeviceControlItem() { FirstLevel = true, HeaderName = mDevinfo.OutputArray[i - 1].Name, Tag = mDevinfo, Direction = _Direction.Top };
+                }
+
+                gdLeftItem.SetBinding(DeviceControlItem.VisibilityProperty, new Binding("SingleBool")
+                {
+                    Source = m_CellList[i],
+                    Converter = Converter.CellVisibilityConverterForSingle
+                });
+                gdLeftItem.iTag = Dcounter;
+
+                gdTopItem.SetBinding(DeviceControlItem.VisibilityProperty, new Binding("SingleBool")
+                {
+                    Source = m_CellList[i],
+                    Converter = Converter.CellVisibilityConverterForSingle
+                });
+                gdTopItem.iTag = Dcounter;
+
+                AddNewControlToGrid(gdLeftItem, i + rindex, 0, mLeftgrid);//add control to left grid
+                AddNewControlToGrid(gdTopItem, 0, i + rindex, mTopgrid);//add control to left grid
+
+            }
+            m_CellList[0].SingleBool = true;
+
+            m_devData.m_LeftTop_StateList = m_CellList;
+            //  m_devData.dindex = Dcounter++;
+            mList.Add(m_devData);
+        }
+
+        /*
+         dante增加原理：
+            （1）按平方算，仅有1个设备是，则1的平方个
+               2个设备时---》产生4个区域
+               3个设备时--》产生n的平方个即9个，依次类推
+            （2）增加原理详情：
+               每多添加一个设备，从头遍历，基于index=0,(仅有一个设备以0为开始）
+               a:获得第一个设备的元组个数（port+fixed方块）为行，以当前设备的port+fixed为列，产生新的表格cell，添加到grid中去
+               b:同时以当前设备的port+fxied为作行，以从第一个设备的元组个数为行，产生新的表格cell 添加到grid中去
+               c:按本身设备的的元组数产生的列与行进行添加到grid中去             
+             */
+
+        private DeviceData gDeviceData = new DeviceData();
+        public void addCenterCellToCenterGid(int devCount, Grid mGrid)
+        {
+            List<List<CellState>> mdevOutputList = new List<List<CellState>>();
+            int ncNewe = devCount + 1;
+            if (gDeviceData == null)
+                gDeviceData = new DeviceData();
+            int ocount = gDeviceData.m_DeviceAbout_MainPort_NumberList.Count; //已添加的数据块统计数
+            Control cell = null;
+            CellState m_state = null;
+
+            int seakRowindex = 0; //当前最新的行索引
+            int seakColindex = 0; //当前最新的列索引;
+            Debug.WriteLine("Device Data,ocount is  {0}", ocount);
+
+            if (ocount == 0)
+            {
+
+                for (int row = 0; row < ncNewe; row++)
+                {
+                    for (int col = 0; col < ncNewe; col++)  //a block area ------------
+                    {
+
+                        mGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20, GridUnitType.Auto) });
+                        mGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(20, GridUnitType.Auto) });
+
+                        m_state = new CellState() { TRow = seakRowindex + row, TCol = seakColindex + col };
+                        gDeviceData.m_OutputPortList.Add(m_state);
+
+                        if (col == 0 && row == 0)
+                            cell = new DeviceControlButtonCell() { ChangedIcon = false };
+                        else
+                            cell = new DeviceControlDisplayCell() { IsCommon = true };
+                        AddNewControlToGrid(cell, seakRowindex + row, seakColindex + col, mGrid);
+                    }
+
+                }
+
+                //m_devData = new DeviceData();
+                //m_devData.mainBlockRCNumber = ncNewe;//指定主方块的个数
+                //m_devData.iRowindex = seakRowindex;
+                //m_devData.iColumindex = seakColindex;
+
+                ////------------------------------------------
+                //m_devData.blockRowValues = ncNewe;
+                //m_devData.blockColumValues = ncNewe;
+                //m_gDeviceDataList.Add(m_devData);
+                //------------------------------------------------
+
+
+
+            }
+            else
+            {
+                #region begin add from top tobottom
+                //遍历每一个数据块主数据块的行与列
+                //----------------------------------------------
+                //遍历以第一个表格的行数+现在的列数，第一次取得列的最大数
+                //--
+                seakColindex = gDeviceData.getTotal_MainRC_CellNumbers();
+                seakRowindex = 0;
+
+                for (int index = 0; index < ocount; index++) //遍历以前的数据块，看有多少，在其基础之上进行进一步的添加
+                {
+                    int oldMainRCNumber = gDeviceData.m_DeviceAbout_MainPort_NumberList[index];//--------------------------------------------
+
+                    int coNum = ncNewe;
+                    for (int row = 0; row < oldMainRCNumber; row++)
+                    {
+                        for (int col = 0; col < ncNewe; col++)  //a block area ------------ 
+                        {
+                            mGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20, GridUnitType.Auto) });
+                            mGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(20, GridUnitType.Auto) });
+
+
+                            m_state = new CellState() { TRow = row + gDeviceData.getTotal_LastMainRC_CellNumbers(index), TCol = col + seakColindex };
+                            gDeviceData.m_OutputPortList.Add(m_state);
+
+                            if (col == 0 && row == 0)
+                                cell = new DeviceControlButtonCell() { ChangedIcon = false };
+                            else
+                                cell = new DeviceControlDisplayCell() { IsCommon = true };
+
+                            AddNewControlToGrid(cell, row + gDeviceData.getTotal_LastMainRC_CellNumbers(index), col + seakColindex, mGrid);
+                        }
+
+                    }
+
+
+                    ////
+                    //m_devData.iRowindex = seakRowindex;
+                    //m_devData.iColumindex = seakColindex;
+                    //m_devData.mainBlockRCNumber = ncNewe;
+                    ////------------------------------------------
+                    //m_devData.blockRowValues = oldMainRCNumber;
+                    //m_devData.blockColumValues = ncNewe;
+                    //m_gDeviceDataList.Add(m_devData);
+                    //------------------------------------------------
+
+                }
+                #endregion
+                #region  add it from left to right
+
+                for (int index = 0; index < ocount; index++) //遍历以前的数据块，看有多少，在其基础之上进行进一步的添加
+                {
+                    //----------------------------------------------
+                    //从第一个表格进行遍历其列数+现在的行数,第一次取得行的最大数
+                    //----------------------------------------------    
+
+                    int oldMainRCNumber = gDeviceData.m_DeviceAbout_MainPort_NumberList[index];//遍历每一个数据块主数据块的行与列
+                    seakRowindex = gDeviceData.getTotal_MainRC_CellNumbers();
+                    seakColindex = 0;
+                    for (int row = 0; row < ncNewe; row++)  //a block area ------------
+                    {
+                        for (int col = 0; col < oldMainRCNumber; col++)
+                        {
+                            mGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20, GridUnitType.Auto) });
+                            mGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(20, GridUnitType.Auto) });
+
+                            m_state = new CellState() { TRow = seakRowindex + row, TCol = col + gDeviceData.getTotal_LastMainRC_CellNumbers(index) };
+                            gDeviceData.m_OutputPortList.Add(m_state);
+
+                            if (col == 0 && row == 0)
+                                cell = new DeviceControlButtonCell() { ChangedIcon = false, };
+                            else
+                                cell = new DeviceControlDisplayCell() { IsCommon = false };
+                            AddNewControlToGrid(cell, seakRowindex + row, col + gDeviceData.getTotal_LastMainRC_CellNumbers(index), mGrid);
+                        }
+
+                    }
+
+                    //m_devData = new DeviceData();
+                    //m_devData.iRowindex = seakRowindex;
+                    //m_devData.iColumindex = seakColindex;
+
+                    ////------------------------------------------
+                    //m_devData.mainBlockRCNumber = ncNewe;
+                    //m_devData.blockRowValues = ncNewe;
+                    //m_devData.blockColumValues = oldMainRCNumber;
+                    //m_devData.m_blockCellStateList.Add(m_state);
+                    //m_gDeviceDataList.Add(m_devData);
+
+                    //m_devData = new DeviceData();
+                    //m_devData.iRowindex = seakRowindex;
+                    //m_devData.iColumindex = seakColindex;
+                    //m_devData.mainBlockRCNumber = ncNewe;
+                    ////------------------------------------------
+                    //m_devData.blockRowValues = ncNewe;
+                    //m_devData.blockColumValues = ncNewe;
+                    //m_gDeviceDataList.Add(m_devData);
+                    //------------------------------------------------
+
+                }
+
+                #endregion
+                //------------------------------------------------
+                //----------------------------------------------
+                //添加自身到列表中
+                //----------------------------------------------
+
+                seakRowindex = gDeviceData.getTotal_MainRC_CellNumbers();
+                for (int row = 0; row < ncNewe; row++)
+                {
+                    for (int col = 0; col < ncNewe; col++)  //a block area ------------ 
+                    {
+                        mGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20, GridUnitType.Auto) });
+                        mGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(20, GridUnitType.Auto) });
+                        m_state = new CellState() { TRow = seakRowindex + row, TCol = seakRowindex + col };
+                        gDeviceData.m_OutputPortList.Add(m_state);
+                        if (col == 0 && row == 0)
+                            cell = new DeviceControlButtonCell() { ChangedIcon = false };
+                        else
+                            cell = new DeviceControlDisplayCell() { IsCommon = false };
+                        AddNewControlToGrid(cell, seakRowindex + row, seakRowindex + col, mGrid);
+                    }
+                }
+
+
+            }
+
+
+
+            //end region
+            gDeviceData.m_DeviceAbout_MainPort_NumberList.Add(ncNewe);
+            Debug.WriteLine("add  device sub  number is  {0}", gDeviceData.m_OutputPortList.Count);
+
+        }
+
+
+        private void AddNewControlToGrid(Control control, int row, int column, Grid grid)
+        {
+            grid.Children.Add(control);
+            Grid.SetRow(control, row); //将control设置在第几行，注意这里是静态方法
+            Grid.SetColumn(control, column);//将control设置在第几行，
+        }
+
+        private void MainWindow_Left_ExpandItems(bool IsOpen, DeviceControlItem Source)
+        {
+            //  throw new NotImplementedException();
+            int index = Source.iTag;
+            Debug.WriteLine("you click the index is  {0}", index);
+            m_gDeviceDataList[index].procesCellSingleBool_Left_OpeClospge(IsOpen);
+            // m_DeviceDataList[index].setCellSate_SingleBool(IsOpen);
+        }
+
+        private void MainWindow_Top_ExpandItems(bool IsOpen, DeviceControlItem Source)
+        {
+            //  throw new NotImplementedException();
+            int index = Source.iTag;
+            Debug.WriteLine("you click the index is  {0}", index);
+            m_gDeviceDataList[index].procesCellSingleBool_Top_OpeClospge(IsOpen);
+            // m_DeviceDataList[index].setCellSate_SingleBool(IsOpen);
+        }
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //addControll_toLeftScroll(_DeviceCollection[0], m_gDeviceDataList, leftGD, TopGD, CenterGD);
+            // Debug.WriteLine("m_cellState counst is {0}", m_cellState.Count);
+            addCenterCellToCenterGid(2, CenterGD);
+        }
+
+        private void Button_Click2(object sender, RoutedEventArgs e)
+        {
+            addCenterCellToCenterGid(1, CenterGD);
+        }
+
+        private void Button_Click3(object sender, RoutedEventArgs e)
+        {
+            addCenterCellToCenterGid(2, CenterGD);
+        }
+
+        private void Button_Click4(object sender, RoutedEventArgs e)
+        {
+            addCenterCellToCenterGid(3, CenterGD);
+        }
+
+        private void Button_Click5(object sender, RoutedEventArgs e)
+        {
+            addCenterCellToCenterGid(4, CenterGD);
+        }
+
+        private void Button_Clear(object sender, RoutedEventArgs e)
+        {
+            m_gDeviceDataList.Clear();
+
+        }
+    }
+
+
+
+}
