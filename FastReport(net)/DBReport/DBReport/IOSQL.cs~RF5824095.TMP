@@ -1,0 +1,102 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DBReport
+{
+    public class IOSQL
+    {
+
+        private static IOSQL _ioSQL = null;
+
+        public IOSQL()
+        {
+
+
+        }
+
+        public IOSQL getInstance()
+        {
+            if (_ioSQL == null)
+            {
+                _ioSQL = new IOSQL();
+            }
+            return _ioSQL;
+        }
+        private string uDataBase = "Employee.db3"; //default is in the app file directory
+        public SQLiteConnection m_dbConnection;
+        private static string DBPwsd = string.Empty;    //"IOWilliamxia2016";
+
+
+        public bool FileInUse(string strpath)
+        {
+            bool res = false;
+            try
+            {
+                using (FileStream fs = new FileStream(strpath, FileMode.OpenOrCreate))
+                {
+                    res = !fs.CanWrite;
+                }
+                return false;
+            }
+            catch (IOException ex)
+            {
+                return true;
+
+            }
+
+        }
+        private void createDataBase()
+        {
+            if (File.Exists(uDataBase))
+            {
+                Debug.WriteLine("database is exist ");
+                if (FileInUse(uDataBase))
+                {
+                    //MessageBox.Show("File is in used or has opened,you must close the file firstly!");
+                    Debug.WriteLine("File is in used or has opened,you must close the file firstly!");
+                    Environment.Exit(-1);
+                }
+            }
+            else
+            {
+                //  Debug.WriteLine("database is not exist....");
+                SQLiteConnection.CreateFile(uDataBase);
+            }
+
+        }
+        public void connectToDataBase(string strDB, string strPwd)
+        {
+            try
+            {
+
+                string strDBC = string.Format("Data Source={0};Version=3;Password={1}", strDB, strPwd);
+                m_dbConnection = new SQLiteConnection(strDBC);
+                m_dbConnection.Open();
+                //  m_dbConnection.SetPassword
+                m_dbConnection.ChangePassword(DBPwsd);
+                //  m_dbConnection         
+
+            }
+            catch (Exception ec)
+            {
+                //   MessageBox.Show("Open dtabase error");
+                Debug.WriteLine("connect to database error...............{0}", ec.ToString());
+            }
+
+        }
+        public void createTable(string sqlTb,)
+        {
+            SQLiteCommand comand = new SQLiteCommand(sqlTb, m_dbConnection);
+            comand.ExecuteNonQuery();//insert or create table ,it is the non return type  
+        }
+
+
+
+    }
+}

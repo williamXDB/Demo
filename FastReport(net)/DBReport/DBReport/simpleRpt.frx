@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/25/2017 10:26:55" ReportInfo.Modified="12/26/2017 09:57:57" ReportInfo.CreatorVersion="2018.1.4.0">
+  <Dictionary>
+    <SQLiteDataConnection Name="Employee" ConnectionString="rijcmlqIltkgxALMArhJ2W63qXqyzNfy/dnhiptVBwuVq1mmH63qYuAcH6+Mc0W5FvhMa43SZFmbaVVvlIOu5I3k2HgQSLy7VSQLwv13aOcBgTXrdldgVrY26ZmLbjy94ZNK/RgDDXHS+OwMt2mqBUBOB6Jlw==">
+      <TableDataSource Name="Employees" DataType="System.Int32" Enabled="true" TableName="Employees">
+        <Column Name="Address" DataType="System.String"/>
+        <Column Name="HomePhone" DataType="System.String"/>
+        <Column Name="Notes" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="BirthDate" DataType="System.DateTime"/>
+      </TableDataSource>
+    </SQLiteDataConnection>
+  </Dictionary>
+  <ReportPage Name="Page1" Guides="207.9,415.8,37.8,47.25,141.75,444.15,623.7,330.75,652.05,217.35">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="37.8" Guides="9.45,28.35">
+      <TextObject Name="Text1" Left="207.9" Top="9.45" Width="207.9" Height="18.9" Text="Simple Report Demo " Font="SimSun, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="41.37" Width="718.2" Height="103.95" Guides="66.15,94.5,9.45,28.35,56.7,75.6,37.8">
+      <TextObject Name="Text8" Left="37.8" Top="66.15" Width="170.1" Height="28.35" Text="[Employees.Address]"/>
+      <TextObject Name="Text2" Left="47.25" Top="9.45" Width="94.5" Height="18.9" Text="[Employees.HomePhone]"/>
+      <TextObject Name="Text4" Left="444.15" Top="56.7" Width="179.55" Height="18.9" Text="[Employees.LastName]"/>
+      <TextObject Name="Text5" Left="207.9" Top="37.8" Width="122.85" Height="18.9" Text="[Employees.FirstName]"/>
+      <TextObject Name="Text6" Left="444.15" Top="9.45" Width="207.9" Height="18.9" Text="[Employees.BirthDate]" Format="Date" Format.Format="d"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="148.88" Width="718.2" Height="85.05" Guides="9.45,66.15,37.8,56.7" DataSource="Employees">
+      <TextObject Name="Text7" Left="217.35" Top="9.45" Width="226.8" Height="56.7" Text="[Employees.HomePhone]"/>
+      <TextObject Name="Text3" Left="47.25" Top="37.8" Width="170.1" Height="18.9" Text="[Employees.Notes]"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="237.5" Width="718.2" Height="18.9"/>
+  </ReportPage>
+</Report>
